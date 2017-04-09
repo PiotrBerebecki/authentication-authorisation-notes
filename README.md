@@ -86,6 +86,34 @@ To clear a cookie:
 request.cookieAuth.clear();
 ```
 
+## Authentication and Authorisation
+
+- Authentication is about validating that a user really is who they claim to be and authorization is about the permissions of the user and what they have access to.
+
+
+## OAuth flow
+
+1. User hits “Login with Facebook”
+1. Facebook SDK talks to Facebook backend to get a token
+1. Your client gives your backend the token
+1. Your backend validates the token against Facebook’s servers
+1. Your backend issues a new authentication or session token
+1. Your client saves your backend’s auth token: Now you’re logged in and can talk to your own servers forever, or at least in a way you understand.
+
+## Persisting Facebook “connectedness” across logins and devices
+
+Once a user signs in with Facebook, she might sign in with another service under the same email address. Or a different user might “Connect” his account to Facebook later, which should associate his Facebook session with his user account in the backend.
+
+But when these guys sign in on another device, or if they sign out and sign back in (without tapping “Login with Facebook”), the Facebook SDK in the client might not know about their Facebook sessions anymore.
+Additionally, the only way to keep sessions alive is to refresh them in the client; there’s no facility for doing this on the server.
+
+So, to wire the session back up, when a user who has logged in with Facebook (or connected his or her Facebook account) logs back in, your app should do the following:
+
+1. Load any recent third-party sign-in tokens from your backend
+1. Re-create the Facebook/Google login sessions and issue a request
+1. Check the auth token. If it has changed, save the new token to your backend to keep the session alive.
+
+You can replicate this behavior on Android and the web so that when a user signs into a different client, you can silently keep them connected.
 
 ## Bcrypt
 
@@ -113,7 +141,13 @@ Bcrypt is a library for hashing passwords. It provides functions for salting and
 
 The general idea is to hash a password when a user first creates it, then store the hashed password in a database. When the user tries to log in later you hash the password they provide and compare this hash to the stored hash in the database. If the hashes match that means the passwords are the same, so the user is authenticated.
 
-### Resources
+
+
+
+
+## Resources
+
+[Cookie auth in Hapi](https://medium.com/@poeticninja/authentication-and-authorization-with-hapi-5529b5ecc8ec)
 
 [Bcrypt docs](https://www.npmjs.com/package/bcrypt)
 
