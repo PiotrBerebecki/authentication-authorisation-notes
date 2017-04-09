@@ -1,8 +1,27 @@
-# Authentication and Authorisation - Notes
+# Authentication and Authorisation in Hapi - Notes
 
 Authentication within hapi is based on the concept of `schemes` and `strategies`.
 
-## Hapi
+## Scheme (a general type of auth, like "basic" or "digest") and Strategy (a pre-configured and named instance of a scheme).
+  
+Think of a `scheme` as a general type of auth, like `"basic"` or `"digest"`. You can think of a scheme as a template for authentication. A scheme isn’t used directly to authenticate users - instead you create a specific strategy from the scheme.
+
+A `strategy` is a pre-configured and named instance of a scheme. Strategies exist so you can use the same scheme several times, in a slightly different way. For instance, might decide to you want use basic authentication in your app. For some routes you might wish to validate a user’s passwords against a value in a database and for some other routes, you might wish to check the password against a value stored in a text file. In this case you can create 2 different strategies from the scheme.
+
+Some authentication schemas are available as a plugin for HAPI:
+
+* [hapi-auth-basic](https://github.com/hapijs/hapi-auth-basic)
+Generic browser pop up with username and password
+
+* [hapi-auth-cookie](https://github.com/hapijs/hapi-auth-cookie)
+Provides simple cookie-based session management. Upon validation user receives a session cookie.
+Can be used in compination with `hapi-context-credentials` to make credentials available globally.
+
+* [hapi-auth-bearer-token](https://github.com/johnbrett/hapi-auth-bearer-token)
+Bearer authentication requires validating a token passed in by either the bearer authorization header, or by an access_token query parameter.
+
+
+### hapi-auth-cookie example
 
 ```javascript
 const cookieAuthModule = require('hapi-auth-cookie');
@@ -23,7 +42,8 @@ server.register([vision, inert, cookieAuthModule, contextCredentials], err => {
     throw err;
   }
   
-  // register a strategy with a name 'base', you are free to call it what you like
+  // Once you've registered your scheme, you need a way to use it. This is where strategies come in.
+  // Register a strategy with a name 'base', you are free to call it what you like
   server.auth.strategy('base', 'cookie', 'optional', {
     password: process.env.COOKIE_PASSWORD,
     cookie: 'name-of-cookie-on-client',
@@ -37,21 +57,7 @@ server.register([vision, inert, cookieAuthModule, contextCredentials], err => {
 });
 ```
 
-## Scheme - a general type of auth, like "basic" or "digest"
-  - A scheme is a method with the signature `function (server, options)`. The server parameter is a reference to the server the scheme is being added to, while the options parameter is the configuration object provided when registering a strategy that uses this scheme.
-  
-Think of a `scheme` as a general type of auth, like `"basic"` or `"digest"`. You can think of a scheme as a template for authentication. A scheme isn’t used directly to authenticate users - instead you create a specific strategy from the scheme.
-
-Some authentication schemas are available as a plugin for HAPI:
-
-* [hapi-auth-basic](https://github.com/hapijs/hapi-auth-basic)
-Generic browser pop up with username and password
-
-* [hapi-auth-cookie](https://github.com/hapijs/hapi-auth-cookie)
-Provides simple cookie-based session management. Upon validation user receives a session cookie.
-Can be used in compination with `hapi-context-credentials` to make credentials available globally.
-
-User completed an html form 
+User completes an html form:
 ```html
 
 <form action="/login-post" method="POST">
@@ -72,42 +78,13 @@ request.cookieAuth.set({
 
 Then the above credentials can be accessed on the request object in other handlers:
 ```javascript
-console.log(request.auth.credentials.username) // 
+console.log(request.auth.credentials.username)
 ```
 
 To clear a cookie:
 ```javascript
 request.cookieAuth.clear();
 ```
-
-
-* [hapi-auth-bearer-token](https://github.com/johnbrett/hapi-auth-bearer-token)
-
-Bearer authentication requires validating a token passed in by either the bearer authorization header, or by an access_token query parameter.
-
-## Strategy - a pre-configured and named instance of a scheme.
-  - Once you've registered your scheme, you need a way to use it. This is where strategies come in.
-  - To register a strategy, we must first have a scheme registered. Once that's complete, use `server.auth.strategy('strategy name string', 'scheme name string', [mode], [options])` to register your strategy e.g. 
-  ```javascript
-    server.auth.strategy('base', 'cookie', 'optional', {
-    password: process.env.COOKIE_PASSWORD,
-    cookie: 'cool-app',
-    isSecure: false,
-    ttl: 24 * 60 * 60 * 1000
-  });
-  ```
-
-
-A `strategy` is a pre-configured and named instance of a scheme. Strategies exist so you can use the same scheme several times, in a slightly different way. For instance, might decide to you want use basic authentication in your app. For some routes you might wish to validate a user’s passwords against a value in a database and for some other routes, you might wish to check the password against a value stored in a text file. In this case you can create 2 different strategies from the scheme.
-
-The authenticate method has a signature of `function (request, reply)`, and is the only required method in a scheme.
-
-### Hapi-auth-basic
-https://github.com/hapijs/hapi-auth-basic
-
-- Basic authentication requires validating a username and password combination.
-
-  
 
 
 ## Bcrypt
