@@ -262,3 +262,15 @@ OpenID = using login credentials from an OpenID provider (Google) to login to an
 OAuth = Allowing an application (TwitPic) to act on your behalf to and access information from an application that you use (Twitter).
 
 
+## SSL vs TLS vs HTTPS
+
+### SSL
+Secure Sockets Layer (SSL) is a cryptographic protocol that enables secure communications over the Internet. SSL was originally developed by Netscape and released as SSL 2.0 in 1995. A much improved SSL 3.0 was released in 1996. Current browsers do not support SSL 2.0.
+
+### SSL
+Transport Layer Security (TLS) is the successor to SSL. TLS 1.0 was defined in RFC 2246 in 1999. The differences between TLS 1.0 and SSL 3.0 were significant enough that they did not interoperate. TLS 1.0 did allow the ability to downgrade the connection to SSL 3.0. TLS 1.1 and TLS 1.2 are the later editions in the TLS family. Current browsers support TLS 1.0 by default and may optionally support TLS 1.1 and 1.2.
+
+### HTTPS
+Hypertext Transfer Protocol Secure (HTTPS), or “HTTP Secure,” is an application-specific implementation that is a combination of the Hypertext Transfer Protocol (HTTP) with the SSL/TLS. HTTPS is used to provide encrypted communication with and secure identification of a Web server.
+
+
